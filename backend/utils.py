@@ -7,10 +7,21 @@ wrapper around litellm so the rest of the application stays decluttered.
 """
 
 import os
+import warnings
 from pathlib import Path
 from typing import Final, List, Dict
 
+# Suppress known LiteLLM/Pydantic serialization warning (Message/Choices field count mismatch).
+# See: https://github.com/BerriAI/litellm/issues/11759
+warnings.filterwarnings(
+    "ignore",
+    message="Pydantic serializer warnings",
+    category=UserWarning,
+    module="pydantic",
+)
+
 import litellm  # type: ignore
+import weave
 from dotenv import load_dotenv
 
 # Ensure the .env file is loaded as early as possible.
@@ -28,6 +39,7 @@ MODEL_NAME: Final[str] = os.environ.get("MODEL_NAME", "gpt-4o-mini")
 
 # --- Agent wrapper ---------------------------------------------------------------
 
+@weave.op()
 def get_agent_response(messages: List[Dict[str, str]]) -> List[Dict[str, str]]:  # noqa: WPS231
     """Call the underlying large-language model via *litellm*.
 

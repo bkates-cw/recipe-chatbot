@@ -7,6 +7,7 @@ from typing import Final, List, Dict
 import datetime
 import json
 
+import weave
 from fastapi import FastAPI, HTTPException, status
 from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
@@ -19,6 +20,11 @@ from backend.utils import get_agent_response  # noqa: WPS433 import from parent
 # -----------------------------------------------------------------------------
 
 APP_TITLE: Final[str] = "Recipe Chatbot"
+import os
+_weave_entity = os.environ.get("WANDB_ENTITY", "")
+_weave_project = os.environ.get("WEAVE_PROJECT", "recipe-chatbot")
+WEAVE_PROJECT: Final[str] = f"{_weave_entity}/{_weave_project}" if _weave_entity else _weave_project
+weave.init(WEAVE_PROJECT)
 app = FastAPI(title=APP_TITLE)
 
 # Serve static assets (currently just the HTML) under `/static/*`.

@@ -16,8 +16,10 @@ sys.path.insert(0, str(PROJECT_ROOT))
 import argparse
 import datetime as dt
 import json
+import os
 from concurrent.futures import ThreadPoolExecutor
 
+import weave
 from rich.console import Console, Group
 from rich.markdown import Markdown
 from rich.panel import Panel
@@ -101,6 +103,9 @@ def write_results(output_path: Path, results: list[tuple[str, str, str]]) -> Non
 
 def run_bulk_test(csv_path: Path, num_workers: int = MAX_WORKERS) -> None:
     """Execute bulk testing of queries from CSV file."""
+    entity = os.environ.get("WANDB_ENTITY", "")
+    project = os.environ.get("WEAVE_PROJECT", "recipe-chatbot")
+    weave.init(f"{entity}/{project}" if entity else project)
     console = Console()
     
     queries = read_queries(csv_path)
